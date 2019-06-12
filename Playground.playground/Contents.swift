@@ -1,57 +1,26 @@
 
 import Foundation
 
-typealias KDViewCell = String
 
-class DataModel {}
 
-class CountryModel: DataModel {
-    let name: String
-    let code: String
-    let imageURL: String
-    
-    init(name: String, code: String, imageURL:String) {
-        self.name = name
-        self.code = code
-        self.imageURL = imageURL
-    }
+enum VehicleDataReason: Error {
+    case invalid
 }
 
-extension CountryModel: CustomStringConvertible {
-    var description: String {
-        return """
-        <CountryModel>
-        <name>\(self.name)</name>
-        <code>\(self.code)</code>
-        <imageURL>\(self.imageURL)</imageURL>
-        </CountryModel>
-        """
+func divide(_ index:Int) throws -> VehicleData<String> {
+    guard index > 0 else {
+        throw VehicleDataReason.invalid
     }
+    return VehicleData<String>(value:UUID().uuidString.components(separatedBy: "-").reduce("", +).lowercased())
 }
 
-class ViewModel<Value:DataModel> {
-    let type: KDViewCell
-    let value: Value
-    
-    init(type: KDViewCell, value: Value) {
-        self.type = type
-        self.value = value
-    }
+let result = Result {
+    return try divide(-10)
 }
-
-extension ViewModel: CustomStringConvertible {
-    var description: String {
-        return """
-        <ViewModel>
-        <type>\(self.type)</type>
-        \(self.value)
-        </ViewModel>
-        """
-    }
+print(result)
+switch result {
+case .success(let index):
+    print(index.date, index.value)
+case .failure(let error):
+    print(error)
 }
-
-var results = [ViewModel<DataModel>]()
-
-let item = CountryModel(name: "India", code: "IND", imageURL: "")
-results.append(ViewModel<DataModel>(type: "Kaushal", value: item))
-print(results)
